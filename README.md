@@ -3,6 +3,9 @@
 * Google Cloud Platform CLI (gcloud) -- if you want to deploy to GCP
 * Glide -- recommended if you want to deploy to GCP easily
 
+## Try it Online with Google Cloud Platform 
+Enjoy! https://davic-helpers-dot-wfchiang-dev.uc.r.appspot.com/davic-helpers 
+
 ## Run it Locally 
 ```
 go run main.go
