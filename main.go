@@ -9,7 +9,7 @@ import (
 	"html/template"
 	"github.com/gorilla/mux"
 	"io/ioutil"
-	"wfchiang/davic"
+	"github.com/wfchiang/davic"
 )
 
 const (

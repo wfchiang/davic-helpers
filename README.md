@@ -15,3 +15,31 @@ In command-line:
 ```
 go run main.go
 ```
+
+## Deploy to Google Cloud Platform 
+#### (1) Create Go module 
+```
+go mod init github.com/wfchiang/davic-helpers
+```
+
+#### (2) Deploy 
+```
+gcloud app deploy
+```
+
+## Glide Usage
+#### Install
+```
+glide create
+```
+```
+glide install
+```
+
+#### Cleanup
+```
+rm glide.*
+```
+```
+rm -rf vendor
+```
