@@ -131,7 +131,7 @@ func davicHelperHandler (http_resp http.ResponseWriter, http_reqt *http.Request)
 
 	log.Println("Davic Helper is Hit!")
 	
-	template_fname := "davic-helper.html"
+	template_fname := "davic-helpers.html"
 	tmpl, err := template.New(template_fname).Delims("<<", ">>").ParseFiles(template_fname)
 	if (err != nil) {
 		panic(fmt.Sprintf("Template load failed: %v", err))
@@ -211,8 +211,8 @@ func main () {
 	mux_router := mux.NewRouter()
 
 	mux_router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", file_server))
-	mux_router.HandleFunc("/opt-data", optDataHandler).Methods("GET")
-	mux_router.HandleFunc("/davic-helper", davicHelperHandler).Methods("GET")
+	// mux_router.HandleFunc("/opt-data", optDataHandler).Methods("GET")
+	mux_router.HandleFunc("/davic-helpers", davicHelperHandler).Methods("GET")
 	// mux_router.HandleFunc("/run-davic", runDavicHandler).Methods("GET")
 	// mux_router.HandleFunc("/davic", davicHandler).Methods("POST")
 	mux_router.HandleFunc("/", homepageHandler)

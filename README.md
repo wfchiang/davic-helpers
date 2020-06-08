@@ -1,45 +1,45 @@
+## Prerequisite 
+* Go -- 1.12+ recommended
+* Google Cloud Platform CLI (gcloud) -- if you want to deploy to GCP
+* Glide -- recommended if you want to deploy to GCP easily
 
-## Installation 
-I assume that you already have **Davic** installed. If not, please install Davic first. 
-In addition to Davic, you will also need **Gorilla/mux** framework. 
-Executing the python script of this directory should help installing it: 
-```
-python myinstall.py
-```
-
-## Run
-Assume that you are playing this sample app locally... 
-
-#### Start the Server 
-In command-line:  
+## Run it Locally 
 ```
 go run main.go
-```
+``` 
+
+It will pickup the environment variable **PORT** for the port. 
+The default is 8080.
 
 ## Deploy to Google Cloud Platform 
-#### (1) Create Go module 
+#### (1) Gather the Dependenciese Using Glide 
+```
+glide create
+```
+
+Then 
+
+```
+glide install 
+```
+
+#### (2) Create Go module 
 ```
 go mod init github.com/wfchiang/davic-helpers
 ```
 
-#### (2) Deploy 
+#### (3) Deploy 
 ```
 gcloud app deploy
 ```
 
-## Glide Usage
-#### Install
-```
-glide create
-```
-```
-glide install
-```
-
-#### Cleanup
+#### (optional) Cleanup/Reset Glide-installed Dependencies 
 ```
 rm glide.*
 ```
+
+Then
+
 ```
 rm -rf vendor
 ```
