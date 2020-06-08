@@ -211,7 +211,7 @@ func main () {
 	mux_router := mux.NewRouter()
 
 	mux_router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", file_server))
-	// mux_router.HandleFunc("/opt-data", optDataHandler).Methods("GET")
+	mux_router.HandleFunc("/opt-data", optDataHandler).Methods("GET")
 	mux_router.HandleFunc("/davic-helpers", davicHelperHandler).Methods("GET")
 	// mux_router.HandleFunc("/run-davic", runDavicHandler).Methods("GET")
 	// mux_router.HandleFunc("/davic", davicHandler).Methods("POST")
