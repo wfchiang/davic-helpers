@@ -18,6 +18,7 @@ const (
 	TYPE_BOOLEAN = "(boolean)"
 	TYPE_NUMBER = "(number)"
 	TYPE_STRING = "(string)"
+	TYPE_OBJECT = "(object)"
 	TYPE_EXPR = "(expression)"
 	VALUE_INDEX_NUMBER = "Index " + TYPE_NUMBER
 	VALUE_KEY_STRING = "Key " + TYPE_STRING 
@@ -38,6 +39,10 @@ type OptData struct {
 
 type OptList struct {
 	SymbolOptMark string
+	KeyHttpMethod string 
+	KeyHttpUrl string 
+	KeyHttpHeaders string 
+	KeyHttpBody string 
 	Operations []OptData 
 }
 
@@ -46,7 +51,15 @@ type OptList struct {
 // ====
 var OptListData = OptList {
 	SymbolOptMark: davic.SYMBOL_OPT_MARK, 
+	KeyHttpMethod: davic.KEY_HTTP_METHOD, 
+	KeyHttpUrl: davic.KEY_HTTP_URL, 
+	KeyHttpHeaders: davic.KEY_HTTP_HEADERS, 
+	KeyHttpBody: davic.KEY_HTTP_BODY, 
 	Operations: []OptData {
+		OptData {
+			Name: "Http Call", 
+			Symbol: davic.OPT_HTTP_CALL, 
+			OpdNames: []string {"Http Request " + TYPE_OBJECT}}, 
 		OptData {
 			Name: "Lambda", 
 			Symbol: davic.OPT_LAMBDA, 

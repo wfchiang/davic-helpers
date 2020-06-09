@@ -17,6 +17,9 @@
 
                 $scope.keyMakerNewPhrase = null; 
                 $scope.keyMakerKey = []; 
+                $scope.httpRequestObj = null; 
+                $scope.strHttpHeaders = "{}"; 
+                $scope.strHttpBody = ""; 
 
                 $scope.optData = null; 
                 $scope.optMark = null; 
@@ -25,6 +28,7 @@
                 $scope.type_boolean = "(boolean)"
                 $scope.type_string = "(string)"
                 $scope.type_number = "(number)"
+                $scope.type_object = "(object)"
                 $scope.type_expr = "(expression)"
 
                 $scope.newOpt = []; 
@@ -40,6 +44,11 @@
                             if (typeof http_resp.data === 'object') {
                                 $scope.optData = http_resp.data; 
                                 $scope.optMark = $scope.optData.SymbolOptMark;
+                                $scope.httpRequestObj = {}; 
+                                $scope.httpRequestObj[$scope.optData.KeyHttpMethod] = ""; 
+                                $scope.httpRequestObj[$scope.optData.KeyHttpUrl] = ""; 
+                                $scope.httpRequestObj[$scope.optData.KeyHttpHeaders] = {}; 
+                                $scope.httpRequestObj[$scope.optData.KeyHttpBody] = null; 
                                 $scope.optList = $scope.optData.Operations; 
                                 // sort the optList 
                                 for (var i = 1 ; i < $scope.optList.length ; i++) {
@@ -89,6 +98,9 @@
                     else if (opd_name.endsWith($scope.type_string)) {
                         return opd_value; 
                     }
+                    else if (opd_name.endsWith($scope.type_object)) {
+                        return JSON.parse(opd_value); 
+                    }
                     else if (opd_name.endsWith($scope.type_expr)) {
                         return JSON.parse(opd_value); 
                     }
@@ -105,6 +117,11 @@
                         var opd_value = $scope.specifiedOpds[$scope.selectedOptId][i]; 
                         $scope.newOpt[2 + i] = $scope.makeOpd(opd_name, opd_value); 
                     }
+                }; 
+
+                $scope.makeHttpRequestObj = function () {
+                    $scope.httpRequestObj[$scope.optData.KeyHttpHeaders] = JSON.parse($scope.strHttpHeaders); 
+                    $scope.httpRequestObj[$scope.optData.KeyHttpBody] = JSON.parse($scope.strHttpBody); 
                 }; 
             }); 
         </script>
@@ -124,6 +141,33 @@
                 </p>
                 <h4>Davic Object Key</h4>
                 <pre>{{keyMakerKey}}</pre>
+            </div>
+
+            <hr/>
+
+            <div>
+                <h2>Http Request Object Maker</h2>
+                <table>
+                    <tr>
+                        <td>{{optData.KeyHttpMethod}}</td>
+                        <td><textarea ng-model="httpRequestObj[optData.KeyHttpMethod]"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td>{{optData.KeyHttpUrl}}</td>
+                        <td><textarea ng-model="httpRequestObj[optData.KeyHttpUrl]"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td>{{optData.KeyHttpHeaders}}</td>
+                        <td><textarea ng-model="strHttpHeaders"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td>{{optData.KeyHttpBody}}</td>
+                        <td><textarea ng-model="strHttpBody"></textarea></td>
+                    </tr>
+                </table>
+                <p><button ng-click="makeHttpRequestObj()">make</button></p>
+                <h4></h4>
+                <pre>{{httpRequestObj | prettyJson}}</pre>
             </div>
 
             <hr/>
