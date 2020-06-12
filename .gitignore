@@ -1,3 +1,4 @@
 glide.*
 go.mod
 go.sum
+vendor/

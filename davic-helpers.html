@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="static/style.css"/>
@@ -123,6 +124,16 @@
                     $scope.httpRequestObj[$scope.optData.KeyHttpHeaders] = JSON.parse($scope.strHttpHeaders); 
                     $scope.httpRequestObj[$scope.optData.KeyHttpBody] = JSON.parse($scope.strHttpBody); 
                 }; 
+
+                $scope.copyToClipboard = function (id_element) {
+                    let copyText = document.getElementById(id_element).textContent; 
+                    let clipboard = document.createElement("textarea"); 
+                    clipboard.value = copyText;
+                    document.body.appendChild(clipboard); 
+                    clipboard.select(); 
+                    document.execCommand("copy"); 
+                    document.body.removeChild(clipboard); 
+                }; 
             }); 
         </script>
     </head>
@@ -131,43 +142,62 @@
             <h1>Davic Helper</h1>
             <hr/>
 
-            <div>
-                <h2>Object Key Maker</h2>
-                <p>
-                    Append field name or array index 
-                    <input ng-model="keyMakerNewPhrase"></input>
-                    <button ng-click="addFieldNameToKey()">Add As Field Name</button>
-                    <button ng-click="addArrayIndexToKey()">Add As Array Index</button>
-                </p>
-                <h4>Davic Object Key</h4>
-                <pre>{{keyMakerKey}}</pre>
-            </div>
-
-            <hr/>
-
-            <div>
-                <h2>Http Request Object Maker</h2>
-                <table>
-                    <tr>
-                        <td>{{optData.KeyHttpMethod}}</td>
-                        <td><textarea ng-model="httpRequestObj[optData.KeyHttpMethod]"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td>{{optData.KeyHttpUrl}}</td>
-                        <td><textarea ng-model="httpRequestObj[optData.KeyHttpUrl]"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td>{{optData.KeyHttpHeaders}}</td>
-                        <td><textarea ng-model="strHttpHeaders"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td>{{optData.KeyHttpBody}}</td>
-                        <td><textarea ng-model="strHttpBody"></textarea></td>
-                    </tr>
-                </table>
-                <p><button ng-click="makeHttpRequestObj()">make</button></p>
-                <h4></h4>
-                <pre>{{httpRequestObj | prettyJson}}</pre>
+            <div style="display: table;">
+                <div class="table-row">
+                    <div class="table-cell">
+                        <h2 class="test">Object Key Maker</h2>
+                        <p>
+                            Append field name or array index 
+                            <input ng-model="keyMakerNewPhrase"></input>
+                        </p>
+                        <p>
+                            <button ng-click="addFieldNameToKey()">Add As Field Name</button>
+                            <button ng-click="addArrayIndexToKey()">Add As Array Index</button>
+                        </p>
+                        <h4>Davic Object Key</h4>
+                        <pre id="objKeyResult">{{keyMakerKey}}</pre>
+                        <p>
+                            <button ng-click="copyToClipboard('objKeyResult')">copy</button>
+                        </p>
+                    </div>
+                    <div class="table-pad"></div>
+                    <div class="table-cell">
+                        <h2>Http Request Object Maker</h2>
+                        <table>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td>{{optData.KeyHttpMethod}}</td>
+                                            <td><textarea ng-model="httpRequestObj[optData.KeyHttpMethod]"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{optData.KeyHttpUrl}}</td>
+                                            <td><textarea ng-model="httpRequestObj[optData.KeyHttpUrl]"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{optData.KeyHttpHeaders}}</td>
+                                            <td><textarea ng-model="strHttpHeaders"></textarea></td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{optData.KeyHttpBody}}</td>
+                                            <td><textarea ng-model="strHttpBody"></textarea></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td>
+                                    <button ng-click="makeHttpRequestObj()">make</button>
+                                </td>
+                                <td>
+                                    <pre id="httpRequestObj">{{httpRequestObj | prettyJson}}</pre>
+                                </td>
+                                <td>
+                                    <button ng-click="copyToClipboard('httpRequestObj')">copy</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <hr/>
@@ -209,7 +239,10 @@
 
             <div>
                 <h2>Result Operation</h2>
-                <pre>{{newOpt}}</pre>
+                <pre id="newOpt">{{newOpt}}</pre>
+                <p>
+                    <button ng-click="copyToClipboard('newOpt')">copy</button>
+                </p>
             </div>
             
             <hr/>

@@ -1,8 +1,29 @@
-
-table, th, td {
-    border: 1px solid black;
+body {
+    margin: 20px;
 }
 
-th, td {
+table, th, td {
+    border: 1px solid gray;
+}
+
+th, td { 
     padding: 10px;
+}
+
+div.table-cell {
+    margin: 5px;
+    border: 1px solid gray; 
+    padding: 5px;
+    display: table-cell;
+}
+
+div.table-row {
+    margin: 5px; 
+    padding: 5px;
+    display: table-row;
+}
+
+div.table-pad {
+    width: 30px;
+    display: table-cell;
 }
