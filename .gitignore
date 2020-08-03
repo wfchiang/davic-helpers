@@ -1,4 +1,4 @@
-glide.*
+glide.lock
 go.mod
 go.sum
 vendor/

@@ -101,6 +101,10 @@ var OptListData = OptList {
 			Symbol: davic.OPT_ARITHMETIC_DIV, 
 			OpdNames: []string {VALUE_LHS_EXPR, VALUE_RHS_EXPR}}, 
 		OptData {
+			Name: "String concat", 
+			Symbol: davic.OPT_STRING_CONCAT, 
+			OpdNames: []string {VALUE_LHS_EXPR, VALUE_RHS_EXPR}}, 
+		OptData {
 			Name: "Array Get/Read", 
 			Symbol: davic.OPT_ARRAY_GET, 
 			OpdNames: []string {VALUE_ARRAY_EXPR, VALUE_INDEX_NUMBER}}, 

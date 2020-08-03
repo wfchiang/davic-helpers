@@ -111,6 +111,7 @@
                 }; 
 
                 $scope.makeOpt = function () {
+                    $scope.newOpt = []; 
                     $scope.newOpt[0] = $scope.optMark; 
                     $scope.newOpt[1] = $scope.optList[$scope.selectedOptId].Symbol; 
                     for (var i = 0 ; i < $scope.specifiedOpds[$scope.selectedOptId].length ; i++) {

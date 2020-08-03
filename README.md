@@ -38,7 +38,7 @@ gcloud app deploy
 
 #### (optional) Cleanup/Reset Glide-installed Dependencies 
 ```
-rm glide.*
+rm glide.lock
 ```
 
 Then
