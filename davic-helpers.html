@@ -34,6 +34,8 @@
 
                 $scope.newOpt = []; 
 
+                $scope.savedOpt = []; 
+
                 $scope.loadOptList = function () {
                     $http({
                         method: 'GET', 
@@ -135,6 +137,13 @@
                     document.execCommand("copy"); 
                     document.body.removeChild(clipboard); 
                 }; 
+
+                $scope.saveOpt = function () {
+                    $scope.savedOpt.push({
+                        note: "", 
+                        opt: JSON.parse(JSON.stringify($scope.newOpt))
+                    }); 
+                }; 
             }); 
         </script>
     </head>
@@ -190,7 +199,7 @@
                                     <button ng-click="makeHttpRequestObj()">make</button>
                                 </td>
                                 <td>
-                                    <pre id="httpRequestObj">{{httpRequestObj | prettyJson}}</pre>
+                                    <pre id="httpRequestObj">{{httpRequestObj}}</pre>
                                 </td>
                                 <td>
                                     <button ng-click="copyToClipboard('httpRequestObj')">copy</button>
@@ -203,37 +212,59 @@
 
             <hr/>
 
-            <div>
-            <h2>Operation Maker</h2>
-                <table>
-                    <tr>
-                        <th>Operator (Symbol)</th>
-                        <th>Symbol</th>
-                        <th>Operands</th>
-                        <th></th>
-                    </tr>
-                    <tr>
-                        <td>
-                            <select id="targetedOpt" ng-model="selectedOptId" ng-changes="resetSpecifiedOpds()">
-                                <option ng-repeat="(opt_key, opt) in optList" ng-value="opt_key">{{opt.Name}}</option>
-                            </select>
-                        </td>
-                        <td>{{optList[selectedOptId].Symbol}}</td>
-                        <td>
-                            <table>
-                                <tr>
-                                    <th ng-repeat="(opd_key, opd) in optList[selectedOptId].OpdNames">{{opd}}</th>
-                                </tr>
-                                <tr>
-                                    <td ng-repeat="(opd_key, opd) in optList[selectedOptId].OpdNames">
-                                        <textarea ng-model="specifiedOpds[selectedOptId][opd_key]"></textarea>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td><button ng-click="makeOpt()">Make</button></td>
-                    </tr>
-                </table>
+            <div style="display: table;">
+                <div class="table-row">
+                    <div class="table-cell">
+                        <h2>Operation Maker</h2>
+                        <table>
+                            <tr>
+                                <th>Operator (Symbol)</th>
+                                <th>Symbol</th>
+                                <th>Operands</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select id="targetedOpt" ng-model="selectedOptId" ng-changes="resetSpecifiedOpds()">
+                                        <option ng-repeat="(opt_key, opt) in optList" ng-value="opt_key">{{opt.Name}}</option>
+                                    </select>
+                                </td>
+                                <td>{{optList[selectedOptId].Symbol}}</td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <th ng-repeat="(opd_key, opd) in optList[selectedOptId].OpdNames">{{opd}}</th>
+                                        </tr>
+                                        <tr>
+                                            <td ng-repeat="(opd_key, opd) in optList[selectedOptId].OpdNames">
+                                                <textarea ng-model="specifiedOpds[selectedOptId][opd_key]"></textarea>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td><button ng-click="makeOpt()">Make</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="table-pad"></div>
+                    <div class="table-cell">
+                        <h2>Saved Operations</h2>
+                        <table> 
+                            <tr>
+                                <th>Id</th>
+                                <th>Note</th>
+                                <th>Operation</th>
+                                <th></th>
+                            </tr>
+                            <tr ng-repeat="(opt_key, sOpt) in savedOpt">
+                                <td>{{opt_key}}</td>
+                                <td><textarea ng-model="sOpt.note"></textarea></td>
+                                <td ng-attr-id="{{'sOpt-'+opt_key}}">{{sOpt.opt}}</td>
+                                <td><button ng-click="copyToClipboard('sOpt-'+opt_key)">copy</button></td>
+                            </tr>
+                        </table>
+                    </div>        
+                </div>
             </div>
             
             <hr/>
@@ -243,6 +274,9 @@
                 <pre id="newOpt">{{newOpt}}</pre>
                 <p>
                     <button ng-click="copyToClipboard('newOpt')">copy</button>
+                </p>
+                <p>
+                    <button ng-click="saveOpt()">save</button>
                 </p>
             </div>
             

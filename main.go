@@ -111,7 +111,11 @@ var OptListData = OptList {
 		OptData {
 			Name: "Object Read", 
 			Symbol: davic.OPT_OBJ_READ,
-			OpdNames: []string {VALUE_OBJ_EXPR, VALUE_KEY_EXPR}} }}
+			OpdNames: []string {VALUE_OBJ_EXPR, VALUE_KEY_EXPR}},  
+		OptData {
+			Name: "Object Update", 
+			Symbol: davic.OPT_OBJ_UPDATE, 
+			OpdNames: []string {VALUE_OBJ_EXPR, VALUE_KEY_EXPR, VALUE_VALUE_EXPR}} }}
 
 // ==== 
 // Recovery function 
