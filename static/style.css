@@ -1,5 +1,19 @@
 body {
-    margin: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+h1 {
+    width: 90%; 
+    margin-top: 10px; 
+    margin-bottom: 10px;
+    margin-left: 5%;
+    margin-right: 5%;
+    padding: 10px;
+    text-align: center;
+    background-color: ivory;
 }
 
 table, th, td {
@@ -10,11 +24,21 @@ th, td {
     padding: 10px;
 }
 
+button {
+    margin: 8px; 
+    padding: 8px; 
+    font-size: 14px;
+    background-color: lightcyan;
+    border-radius: 8px;
+}
+
 div.table-cell {
-    margin: 5px;
+    margin: 8px;
+    padding: 8px;
     border: 1px solid gray; 
-    padding: 5px;
+    border-radius: 8px;
     display: table-cell;
+    font-size: 14px;
 }
 
 div.table-row {
@@ -26,4 +50,12 @@ div.table-row {
 div.table-pad {
     width: 30px;
     display: table-cell;
+}
+
+.color-green {
+    color: green; 
+}
+
+.color-red {
+    color: red;
 }

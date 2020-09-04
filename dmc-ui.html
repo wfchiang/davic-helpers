@@ -1,0 +1,128 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="static/style.css"/>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+        
+        <script>
+            // Have the ngApp 
+            let ngApp = angular.module('ngApp', []); 
+            
+            // prettyJson filter 
+            ngApp.filter('prettyJson', function(){
+                function prettyPrintJson(data) {
+                    if (typeof data === 'object') {
+                        return JSON.stringify(data, null, '    ');
+                    }
+                    else {
+                        return ''; 
+                    }
+                }; 
+                return prettyPrintJson; 
+            }); 
+
+            // ngController 
+            ngApp.controller('ngController', function($http, $scope, $interval, $location){
+                // variables 
+                $scope.pingStatus = {
+                    enabled: false, 
+                    text: 'DMC status unknown...', 
+                    ngClass: 'table-cell color-red'
+                }; 
+                $scope.optList = {
+                    data: undefined, 
+                    spotLight: undefined
+                }; 
+            
+                // initialization 
+                $scope.initNgApp = function() {
+                    // render the ping status component 
+                    $scope.renderPingComponent();
+                };
+
+                // check the status of DMC 
+                $scope.renderPingComponent = function() {
+                    if ($scope.pingStatus.enabled) {
+                        $http({
+                            method: 'GET', 
+                            url: 'https://dmc-dot-wfchiang-dev.uc.r.appspot.com/ping'
+                        }).then(
+                            function success (res) {
+                                if (res.status == 200) {
+                                    $scope.pingStatus.text = 'DMC is alive!';  
+                                    $scope.pingStatus.ngClass = 'table-cell color-green';        
+                                    console.info('DMC is alive!'); 
+                                }
+                                else {
+                                    $scope.pingStatus.text = 'DMC is polluted. [' + String(res.status) + '] ' + String(statusText); 
+                                    $scope.pingStatus.ngClass = 'table-cell color-red'; 
+                                    console.error('DMC ping failed -- ' + String(res.status) + ':' + String(res.statusText)); 
+                                }
+                            },
+                            function error (res) {
+                                $scope.pingStatus.text = 'DMC is down...'; 
+                                $scope.pingStatus.ngClass = 'table-cell color-red'; 
+                                console.error('DMC ping failed -- ' + String(res.status) + ':' + String(res.statusText)); 
+                            }
+                        );
+                    }
+                    else {
+                        $scope.pingStatus.text = 'Status check disabled'; 
+                        $scope.pingStatus.ngClass = 'table-cell color-red'; 
+                    } 
+                }; 
+
+                // check the operation list of DMC 
+                $scope.getOptList = function() {
+                    let reqUrl = 'https://dmc-dot-wfchiang-dev.uc.r.appspot.com/opt-list'
+                    $http({
+                        method: 'GET', 
+                        url: reqUrl, 
+                        transformResponse: function (resData, resHeaders) {
+                            return resData 
+                        }
+                    }).then(
+                        function success (res) {
+                            if (res.status == 200) {
+                                $scope.optList.data = JSON.parse(res.data)
+                                $scope.optList.spotLight = $scope.optList.data; 
+                                console.info('Opt-list acquired'); 
+                            }
+                            else {
+                                console.error('Opt-list call failed -- ' + String(res.status) + ':' + String(res.statusText)); 
+                            }
+                        },
+                        function error (res) {
+                            console.error('Opt-list call failed -- ' + String(res.status) + ':' + String(res.statusText)); 
+                        }
+                    ); 
+                }; 
+
+                // batch setup
+                $scope.pingStatusBatch = $interval($scope.renderPingComponent, 3000); 
+            }); 
+        </script>
+
+        <title>The UI for DMC! Not the UI for Devil-May-Cry...</title>
+    </head>
+    <body>
+        <div ng-init="initNgApp()" ng-app="ngApp" ng-controller="ngController">
+            <h1>The UI for Davic-Micro-Core! Not for Devil-May-Cry...</h1>
+
+            <div style="display: table;">
+                <div class="table-row">
+                    <div id="ping-status" ng-class="pingStatus.ngClass">{{pingStatus.text}}</div>
+                </div>
+            </div>
+
+            <h2>Current Operation List</h2>
+            <button ng-click="getOptList()">Check Operation List</button>
+            <div style="display: table;">
+                <div class="table-row">
+                    <div id="opt-list" class="table-cell">{{optList.spotLight | prettyJson}}</div>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>
