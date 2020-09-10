@@ -59,3 +59,17 @@ div.table-pad {
 .color-red {
     color: red;
 }
+
+.toggle:before {
+    position: absolute;
+    content: "";
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.toggle {
+    position: absolute; 
+    cursor: pointer;
+    -webkit-transition: .4s;
+    transition: .4s;
+}

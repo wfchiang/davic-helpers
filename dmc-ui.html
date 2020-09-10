@@ -1,12 +1,18 @@
 <html>
     <head>
+        <link rel = "stylesheet" href = "https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
         <link rel="stylesheet" type="text/css" href="static/style.css"/>
         
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
         
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-messages.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+
         <script>
             // Have the ngApp 
-            let ngApp = angular.module('ngApp', []); 
+            let ngApp = angular.module('ngApp', ['ngMaterial']); 
             
             // prettyJson filter 
             ngApp.filter('prettyJson', function(){
@@ -24,57 +30,109 @@
             // ngController 
             ngApp.controller('ngController', function($http, $scope, $interval, $location){
                 // variables 
+                $scope.dmcInfo = {
+                    remoteHost: 'https://dmc-dot-wfchiang-dev.uc.r.appspot.com', 
+                    localHost: 'http://localhost:8080', 
+                    useLocal: false,  
+                    host: ''
+                }; 
+
                 $scope.pingStatus = {
                     enabled: false, 
                     text: 'DMC status unknown...', 
-                    ngClass: 'table-cell color-red'
+                    ngClass: 'table-cell color-red', 
+                    lastCheck: {
+                        text: 'N/A', 
+                        ngClass: ''
+                    }
                 }; 
+
                 $scope.optList = {
                     data: undefined, 
                     spotLight: undefined
-                }; 
+                };
+                
+                $scope.newOptString = ''; 
             
                 // initialization 
                 $scope.initNgApp = function() {
                     // render the ping status component 
                     $scope.renderPingComponent();
+                    // init the DMC host 
+                    $scope.assignDMCHost(); 
+                };
+
+                // util of getting a timestamp 
+                $scope.stampNow = function () {
+                    return String(new Date()); 
+                };
+
+                // assign DMC host 
+                $scope.assignDMCHost = function () {
+                    $scope.dmcInfo.host = ($scope.dmcInfo.useLocal ? $scope.dmcInfo.localHost : $scope.dmcInfo.remoteHost); 
                 };
 
                 // check the status of DMC 
+                $scope.pingDMC = function (callbackSuccess, callbackFail) {
+                    $http({
+                        method: 'GET', 
+                        url: $scope.dmcInfo.host + '/ping'
+                    }).then(
+                        function success (res) {
+                            if (res.status == 200) {
+                                callbackSuccess(res); 
+                            }
+                            else {
+                                callbackFail(res); 
+                            }
+                        },
+                        function error (res) {
+                            callbackFail(res); 
+                        }
+                    );
+                }; 
+
+                // render the DMC status check component 
                 $scope.renderPingComponent = function() {
                     if ($scope.pingStatus.enabled) {
-                        $http({
-                            method: 'GET', 
-                            url: 'https://dmc-dot-wfchiang-dev.uc.r.appspot.com/ping'
-                        }).then(
-                            function success (res) {
-                                if (res.status == 200) {
-                                    $scope.pingStatus.text = 'DMC is alive!';  
-                                    $scope.pingStatus.ngClass = 'table-cell color-green';        
-                                    console.info('DMC is alive!'); 
-                                }
-                                else {
-                                    $scope.pingStatus.text = 'DMC is polluted. [' + String(res.status) + '] ' + String(statusText); 
-                                    $scope.pingStatus.ngClass = 'table-cell color-red'; 
-                                    console.error('DMC ping failed -- ' + String(res.status) + ':' + String(res.statusText)); 
-                                }
-                            },
-                            function error (res) {
-                                $scope.pingStatus.text = 'DMC is down...'; 
-                                $scope.pingStatus.ngClass = 'table-cell color-red'; 
-                                console.error('DMC ping failed -- ' + String(res.status) + ':' + String(res.statusText)); 
-                            }
-                        );
+                        let callbackSuccess = function (res) {
+                            $scope.pingStatus.text = 'DMC is alive!';  
+                            $scope.pingStatus.ngClass = 'table-cell color-green';        
+                            console.info('DMC is alive!'); 
+                        }; 
+                        let callbackFail = function (res) {
+                            $scope.pingStatus.text = 'DMC is down...'; 
+                            $scope.pingStatus.ngClass = 'table-cell color-red'; 
+                            console.error('DMC ping failed -- ' + String(res.status) + ':' + String(res.statusText)); 
+                        }; 
+
+                        $scope.pingDMC(callbackSuccess, callbackFail); 
                     }
                     else {
-                        $scope.pingStatus.text = 'Status check disabled'; 
+                        $scope.pingStatus.text = 'Auto status check disabled'; 
                         $scope.pingStatus.ngClass = 'table-cell color-red'; 
                     } 
                 }; 
 
+                // check DMC status once 
+                $scope.checkDMCStatusOnce = function() {
+                    let callbackSuccess = function (res) {
+                        $scope.pingStatus.lastCheck.text = 'DMC was alive at ' + $scope.stampNow();  
+                        $scope.pingStatus.lastCheck.ngClass = 'color-green';        
+                        console.info($scope.pingStatus.lastCheck); 
+                    }; 
+                    let callbackFail = function (res) {
+                        $scope.pingStatus.lastCheck.text = 'DMC was down at ' + $scope.stampNow();  
+                        $scope.pingStatus.lastCheck.ngClass = 'color-red';        
+                        console.error('DMC once ping failed -- ' + String(res.status) + ':' + String(res.statusText));
+                    }; 
+
+                    $scope.pingDMC(callbackSuccess, callbackFail); 
+                }; 
+
                 // check the operation list of DMC 
                 $scope.getOptList = function() {
-                    let reqUrl = 'https://dmc-dot-wfchiang-dev.uc.r.appspot.com/opt-list'
+                    let reqUrl = $scope.dmcInfo.host + '/opt-list'
                     $http({
                         method: 'GET', 
                         url: reqUrl, 
@@ -98,6 +156,61 @@
                     ); 
                 }; 
 
+                // check if the given string is a valid Davic operation 
+                $scope.isValidOpt = function (str_opt) {
+                    if (typeof str_opt === 'string' ) {
+                        let arr_opt = undefined; 
+                        try {
+                            arr_opt = JSON.parse(str_opt);     
+                        } catch (err) {
+                            console.error('isValidOpt: argument is not a valid string of JSON'); 
+                            return false; 
+                        }
+                        if (typeof arr_opt === 'object' && arr_opt.constructor === Array) {
+                            return true; 
+                        }
+                        else {
+                            console.error('isValidOpt: argument is not a valid string of Array'); 
+                            return false; 
+                        }
+                    }
+                    else {
+                        console.error('isValidOpt expects a string as the argument'); 
+                        return false; 
+                    }
+                }; 
+
+                // append a new operation to DMC's operation list 
+                $scope.appendOpt = function (str_opt) {
+                    if (!$scope.isValidOpt(str_opt)) {
+                        alert('Invalid Davic Operation!'); 
+                        return; 
+                    }
+                    
+                    // send the opt to DMC 
+                    $http({
+                        method: 'POST', 
+                        url: $scope.dmcInfo.host + '/opt-append', 
+                        data: JSON.parse(str_opt), 
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        }
+                    }).then(
+                        function success (res) {
+                            if (res.status == 200) {
+                                console.info('Operation successfully appended to DMC\'s List'); 
+                                $scope.getOptList(); 
+                            }
+                            else {
+                                console.error('Opt-append call failed -- ' + String(res.status) + ':' + String(res.statusText)); 
+                            }
+                        },
+                        function error (res) {
+                            console.error('Opt-append call failed -- ' + String(res.status) + ':' + String(res.statusText)); 
+                        }
+                    );
+                }; 
+
                 // batch setup
                 $scope.pingStatusBatch = $interval($scope.renderPingComponent, 3000); 
             }); 
@@ -106,20 +219,60 @@
         <title>The UI for DMC! Not the UI for Devil-May-Cry...</title>
     </head>
     <body>
-        <div ng-init="initNgApp()" ng-app="ngApp" ng-controller="ngController">
+        <div ng-init="initNgApp()" ng-app="ngApp" ng-controller="ngController" ng-cloak>
             <h1>The UI for Davic-Micro-Core! Not for Devil-May-Cry...</h1>
 
             <div style="display: table;">
                 <div class="table-row">
-                    <div id="ping-status" ng-class="pingStatus.ngClass">{{pingStatus.text}}</div>
+                    <div id="ping-status" ng-class="pingStatus.ngClass">
+                        {{pingStatus.text}}
+                        <!-- This button my exhauses my Google API money... -->
+                        <!-- <div id="auto-ping-switch">
+                            <md-switch ng-model="pingStatus.enabled" style="color: black;" aria-label="auto-check-switch" >Enable/Disable Auto Status Check</md-switch>
+                        </div> -->
+                    </div>
+                    
+                    <div class="table-pad"></div>
+
+                    <div class="table-cell">
+                        <button ng-click="checkDMCStatusOnce()" style="margin-right: 20px;">Check DMC Once</button>
+                        <div>Last Status: </div>
+                        <div ng-class="pingStatus.lastCheck.ngClass">{{pingStatus.lastCheck.text}}</div>
+                    </div>
+
+                    <div class="table-pad"></div>
+
+                    <div class="table-cell">
+                        <div id="use-local-switch"> 
+                            <md-switch 
+                                ng-model="dmcInfo.useLocal" 
+                                aria-label="use-local-switch" 
+                                ng-change="assignDMCHost()" >Use Local Host?</md-switch>
+                            <p>DMC Host: {{dmcInfo.host}}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <h2>Current Operation List</h2>
-            <button ng-click="getOptList()">Check Operation List</button>
+            <h2>Davic Operations</h2>
             <div style="display: table;">
-                <div class="table-row">
-                    <div id="opt-list" class="table-cell">{{optList.spotLight | prettyJson}}</div>
+                <div class="table-row"> 
+                    <div id="opt-list" class="table-cell">
+                        <h3>Current Operation List</h3> 
+                        <button ng-click="getOptList()">Check Operation List</button>
+                        <table>
+                            <tr ng-repeat="(id_opt, opt) in optList.data">
+                                <td>{{id_opt}}</td>
+                                <td>{{opt | prettyJson}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="table-pad"></div>
+                    <div id="append-opt" class="table-cell">
+                        <h3>Append an Operation to the List</h3>
+                        <textarea ng-model="newOptString"></textarea>
+                        <button ng-click="appendOpt(newOptString)">Append</button>
+                    </div>
                 </div>
             </div>
 

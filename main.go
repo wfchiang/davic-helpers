@@ -147,12 +147,12 @@ func optDataHandler (http_resp http.ResponseWriter, http_reqt *http.Request) {
 	fmt.Fprintf(http_resp, string(resp_body))
 }
 
-func davicHelperHandler (http_resp http.ResponseWriter, http_reqt *http.Request) {
-	defer recoverFromPanic(http_resp, "davic-helper")
+func optMakerHandler (http_resp http.ResponseWriter, http_reqt *http.Request) {
+	defer recoverFromPanic(http_resp, "opt-maker")
 
-	log.Println("Davic Helper is Hit!")
+	log.Println("Opt-maker is Hit!")
 	
-	template_fname := "davic-helpers.html"
+	template_fname := "opt-maker.html"
 	tmpl, err := template.New(template_fname).Delims("<<", ">>").ParseFiles(template_fname)
 	if (err != nil) {
 		panic(fmt.Sprintf("Template load failed: %v", err))
@@ -160,7 +160,23 @@ func davicHelperHandler (http_resp http.ResponseWriter, http_reqt *http.Request)
 
 	tmpl.Execute(http_resp, nil)
 	
-	log.Println("Davic Helper responded")
+	log.Println("Opt-maker responded")
+}
+
+func dmcUiHandler (http_resp http.ResponseWriter, http_reqt *http.Request) {
+	defer recoverFromPanic(http_resp, "dmc-ui")
+
+	log.Println("DMC-UI is Hit!")
+	
+	template_fname := "dmc-ui.html"
+	tmpl, err := template.New(template_fname).Delims("<<", ">>").ParseFiles(template_fname)
+	if (err != nil) {
+		panic(fmt.Sprintf("Template load failed: %v", err))
+	}
+
+	tmpl.Execute(http_resp, nil)
+	
+	log.Println("DMC-UI responded")
 }
 
 func runDavicHandler (http_resp http.ResponseWriter, http_reqt *http.Request) {
@@ -233,8 +249,8 @@ func main () {
 
 	mux_router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", file_server))
 	mux_router.HandleFunc("/opt-data", optDataHandler).Methods("GET")
-	mux_router.HandleFunc("/davic-helpers", davicHelperHandler).Methods("GET")
-	// mux_router.HandleFunc("/run-davic", runDavicHandler).Methods("GET")
+	mux_router.HandleFunc("/opt-maker", optMakerHandler).Methods("GET")
+	mux_router.HandleFunc("/dmc-ui", dmcUiHandler).Methods("GET")
 	// mux_router.HandleFunc("/davic", davicHandler).Methods("POST")
 	mux_router.HandleFunc("/", homepageHandler)
 
