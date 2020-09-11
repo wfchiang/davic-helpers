@@ -53,6 +53,9 @@
                 };
                 
                 $scope.newOptString = ''; 
+
+                $scope.davicStoreBefore = ''; 
+                $scope.davicStoreAfter = ''; 
             
                 // initialization 
                 $scope.initNgApp = function() {
@@ -211,6 +214,61 @@
                     );
                 }; 
 
+                // remove an opt from the list 
+                $scope.removeOpt = function (opt_id) {
+                    $http({
+                        method: 'GET', 
+                        url: $scope.dmcInfo.host + '/opt-remove/' + String(opt_id)
+                    }).then(
+                        function success (res) {
+                            if (res.status == 200) {
+                                console.info('Operation successfully removed from DMC\'s List'); 
+                                $scope.getOptList(); 
+                            }
+                            else {
+                                console.error('Opt-remove call failed -- ' + String(res.status) + ':' + String(res.statusText)); 
+                            }
+                        },
+                        function error (res) {
+                            console.error('Opt-remove call failed -- ' + String(res.status) + ':' + String(res.statusText)); 
+                        }
+                    );
+                };
+
+                // run davic 
+                $scope.runDavic = function () {
+                    // send the opt to DMC 
+                    $http({
+                        method: 'POST', 
+                        url: $scope.dmcInfo.host + '/run', 
+                        data: JSON.parse($scope.davicStoreBefore), 
+                        headers: {
+                            'Content-Type': 'application/json; charset=UTF-8'
+                        }, 
+                        transformResponse: function (resData, resHeaders) {
+                            return resData 
+                        }
+                    }).then(
+                        function success (res) {
+                            if (res.status == 200) {
+                                console.info('Execution of Davic was successful'); 
+                                try {
+                                    console.info('res.data > ' + res.davic)
+                                    $scope.davicStoreAfter = JSON.parse(res.data); 
+                                } catch (err) {
+                                    console.error('Run-davic call failed when unmarshalling response: ' + String(err));
+                                }
+                            }
+                            else {
+                                console.error('Run-davic call failed -- ' + String(res.status) + ':' + String(res.statusText)); 
+                            }
+                        },
+                        function error (res) {
+                            console.error('Run-davic call failed -- ' + String(res.status) + ':' + String(res.statusText)); 
+                        }
+                    );
+                };
+
                 // batch setup
                 $scope.pingStatusBatch = $interval($scope.renderPingComponent, 3000); 
             }); 
@@ -254,6 +312,27 @@
                 </div>
             </div>
 
+            <h2>Run Davic!</h2>
+            <div style="display: table;">
+                <div class="table-row">
+                    <div class="table-cell">
+                        <h3>Davic Store Before</h3>
+                        <textarea ng-model="davicStoreBefore"></textarea>
+                    </div>
+                    
+                    <div class="table-pad"></div>
+                    
+                    <button ng-click="runDavic()">Run Davic!</button>
+                
+                    <div class="table-pad"></div>
+                    
+                    <div class="table-cell">
+                        <h3>Davic Store After</h3>
+                        {{davicStoreAfter | prettyJson}}
+                    </div>
+                </div>
+            </div>
+
             <h2>Davic Operations</h2>
             <div style="display: table;">
                 <div class="table-row"> 
@@ -264,6 +343,7 @@
                             <tr ng-repeat="(id_opt, opt) in optList.data">
                                 <td>{{id_opt}}</td>
                                 <td>{{opt | prettyJson}}</td>
+                                <td><button ng-click="removeOpt(id_opt)">remove</button></td>
                             </tr>
                         </table>
                     </div>
